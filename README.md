@@ -35,6 +35,7 @@ To configure the application, edit the config.ini file with your Telegram bot to
 
 [Telegram]
 bot_token = your_telegram_bot_token
+
 chat_id = your_chat_id
 
 ## Usage
