@@ -34,6 +34,7 @@ To get started with Product Discount Monitor, follow these steps:
 To configure the application, edit the config.ini file with your Telegram bot token and chat ID:
 
 [Telegram]
+
 bot_token = your_telegram_bot_token
 
 chat_id = your_chat_id
