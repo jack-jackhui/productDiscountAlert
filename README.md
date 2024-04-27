@@ -37,10 +37,10 @@ To configure the application, edit the config.ini file with your Telegram bot to
 bot_token = your_telegram_bot_token
 chat_id = your_chat_id
 
-### Usage
+## Usage
 To run the application, use the following command:
 python main.py
 
-### License
+## License
 Distributed under the MIT License. See LICENSE for more information.
 
