@@ -1,2 +1,3 @@
 python-telegram-bot
-feedparser
+feedparser~=6.0.11
+requests~=2.32.3

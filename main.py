@@ -16,9 +16,9 @@ async def main():
     product_name = config['Ozbargain']['product_name']
 
     bot = TelegramBot(bot_token, chat_id)
-    checker = DealChecker(rss_url)
+    checker = DealChecker(rss_url, product_name)
 
-    result = checker.check_deals(product_name)
+    result = checker.check_deals()
     if result:
         title, link = result
         await bot.send_message(f"Discount found for {product_name}: {title} - {link}")
