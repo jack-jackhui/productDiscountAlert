@@ -1,46 +1,52 @@
 import feedparser
-import requests
-import xml.etree.ElementTree as ET
+
 class DealChecker:
-    def __init__(self, rss_url, product_name):
+    def __init__(self, rss_url, keywords):
         self.rss_url = rss_url
-        self.product_name = product_name
+        self.keywords = [k.strip().lower() for k in keywords.split(',')]
+
+    def is_expired(self, entry):
+        # print("\nEntry keys:", entry.keys())
+        # Check 'expired' in title (legacy)
+        if 'expired' in entry.title.lower():
+            # print(f"Expired via title: {entry.title}")
+            return True
+        # Check for ozb:title-msg type="expired"
+        # feedparser converts : to _ in tags, so it's ozb_title_msg
+        ozb_title_msg = entry.get('ozb_title-msg')
+        # print(f"ozb_title_msg structure: {ozb_title_msg}")  # Debug line
+
+        if ozb_title_msg:
+            # Sometimes it's a dict, sometimes a list of dicts
+            if isinstance(ozb_title_msg, dict):
+                # print(f"Dict keys: {ozb_title_msg.keys()}")  # Debug line
+                if ozb_title_msg.get('type') == 'expired':
+                    # print(f"Expired via ozb_title_msg (dict): {ozb_title_msg}")
+                    return True
+            elif isinstance(ozb_title_msg, list):
+                for msg in ozb_title_msg:
+                    if msg.get('type') == 'expired':
+                        # print(f"Expired via ozb_title_msg (list): {msg}")
+                        return True
+            # Sometimes it's just a string (rare)
+            elif isinstance(ozb_title_msg, str):
+                if 'expired' in ozb_title_msg.lower():
+                    # print(f"Expired via ozb_title_msg (string): {ozb_title_msg}")
+                    return True
+        return False
 
     def check_deals(self):
         deals_found = []
         try:
-            response = requests.get(self.rss_url)
-            response.raise_for_status()
-            xml_content = response.content
-
-            # Parse the XML content
-            root = ET.fromstring(xml_content)
-
-            # Define namespaces
-            namespaces = {
-                'atom': 'http://www.w3.org/2005/Atom',
-                'dc': 'http://purl.org/dc/elements/1.1/',
-                'media': 'http://search.yahoo.com/mrss/',
-                'ozb': 'https://www.ozbargain.com.au',
-            }
-
-            # Iterate over each item in the feed
-            for item in root.findall('.//item'):
-                title = item.find('title').text or ''
-                link = item.find('link').text or ''
-
-                # Check for the 'ozb:title-msg' tag to determine if the deal is expired
-                title_msg = item.find('ozb:title-msg', namespaces)
-                if title_msg is not None and title_msg.get('type') == 'expired':
-                    continue  # Skip expired deals
-
-                # Fallback: Check if 'expired' is in the title
-                if 'expired' in title.lower():
+            feed = feedparser.parse(self.rss_url)
+            for entry in feed.entries:
+                if self.is_expired(entry):
                     continue
-
-                # Check if the product name is in the title
-                if self.product_name.lower() in title.lower():
-                    deals_found.append((title, link))
+                title = entry.title.lower()
+                link = entry.link
+                # At least two keywords in the title
+                if sum(word in title for word in self.keywords) >= 2:
+                    deals_found.append((entry.title, link))
             return deals_found if deals_found else None
         except Exception as e:
             print(f"An error occurred while fetching the RSS feed: {e}")
