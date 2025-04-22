@@ -26,23 +26,24 @@ To get started with Product Discount Monitor, follow these steps:
    ```bash
    git clone https://github.com/jack-jackhui/productDiscountAlert.git
    cd [project-folder]
-
+   ```
 2. Install the required Python libraries:
+   ```
    pip install -r requirements.txt
+   ```
 
 ### Configuration
 To configure the application, edit the config.ini file with your Telegram bot token and chat ID:
 
 [Telegram]
-
+```ini
 bot_token = your_telegram_bot_token
-
 chat_id = your_chat_id
-
+```
 ## Usage
 To run the application, use the following command:
 python main.py
 
 ## License
-Distributed under the MIT License. See LICENSE for more information.
+This project is licensed under the [License Name]. See the `LICENSE` file for details. The license allows for free use, modification, and distribution of the software, subject to certain conditions.
 
